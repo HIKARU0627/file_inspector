@@ -75,16 +75,5 @@ def get_path_list(dir_paths: tuple[Path]) -> list[Path]:
             print(f'file_name: {item.name}')
     return paths
 
-def main():
-    print('Run From main:')
 
-    paths_str: list[str] = [r'C:\Users\ZEROPRO\Downloads\kitten.png', r'C:\Users\ZEROPRO\Downloads\download.png', r'./tax.png']
-    paths: list[Path] = [Path(path) for path in paths_str]
-    print(get_image_size(paths))
-
-    print(size_format(55672, 'B'))
-
-
-if __name__ == '__main__':
-    main()
 
