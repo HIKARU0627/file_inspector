@@ -2,8 +2,10 @@ from PIL import Image
 import os
 from pathlib import Path
 
+# 対応する画像ファイルの拡張子
+suffixes: list[str] = ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.psd']
 
-def get_image_size(paths: list[Path]) -> list[tuple[Path, str, int]]:
+def get_image_length(paths: list[Path]) -> list[tuple[Path, str, int]]:
     """
     指定されたPathオブジェクトのリストから、画像ファイルのファイル名とサイズを取得します。
 
@@ -13,20 +15,32 @@ def get_image_size(paths: list[Path]) -> list[tuple[Path, str, int]]:
     Returns:
         (ファイル名, ファイルサイズ) のタプルを含むリスト。
     """
-    # 対応する画像ファイルの拡張子
-    suffixes: list[str] = ['.jpg', '.jpeg', '.png', '.gif', '.tiff', '.psd']
     results: list[tuple[Path, str, int]] = []
 
     for path in paths:
         print(path)
-        if path.is_file() and path.suffix.lower() in suffixes:
-            file_name: str = path.name
-            file_size: int = os.path.getsize(path)
-            results.append((path, file_name, file_size))
+
+        if path.exists() == False:
+            results.append((path, None, -1))
         else:
-            print('error:', path)
+            if path.is_file() and path.suffix.lower() in suffixes:
+                file_name: str = path.name
+                file_length: int = os.path.getsize(path)
+                results.append((path, file_name, file_length))
+            else:
+                print('error:', path)
 
     return results
+
+def get_image_size(paths: list[Path]) -> list[tuple[Path, str, int]]:
+    results: list[tuple[Path, str, int]] = []
+
+    for path in paths:
+        if path.is_file() and path.suffix.lower() in suffixes:
+            file_name: str = path.name
+            img: Image.Image = Image.open(path)
+            file_size: tuple[int, int] = img.size
+            print(file_size)
 
 
 def size_format(size: int, unit: str) -> tuple[str, float]:
@@ -49,9 +63,8 @@ def size_format(size: int, unit: str) -> tuple[str, float]:
         'MB': 1024 ** 2,
         'GB': 1024 ** 3,
         'TB': 1024 ** 4,
-        'PT': 1024 ** 5
+        'PB': 1024 ** 5
     }
-
     unit = unit.upper()
 
     if unit in units:
